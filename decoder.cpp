@@ -5,8 +5,7 @@
 
 using namespace std;
 
-int find_tag(unsigned char*& mem, unsigned int& class_id, bool& prim, unsigned int& tag){
-    unsigned char* start = mem;
+void find_tag(unsigned char*& mem, unsigned int& class_id, bool& prim, unsigned int& tag){
     unsigned char c = mem[0];
     c = c>>6;  //right shift 6 bits to get only 1st 2 bits
     class_id = c;
@@ -35,11 +34,9 @@ int find_tag(unsigned char*& mem, unsigned int& class_id, bool& prim, unsigned i
         }
     }
     ++mem;
-    return mem-start;
 }
 
-int find_length(unsigned char*& mem, unsigned int &len){
-    unsigned char* start = mem;
+void find_length(unsigned char*& mem, uint64_t &len){
     len=(unsigned int)mem[0];
     if(len<128){
         ++mem;
@@ -57,22 +54,16 @@ int find_length(unsigned char*& mem, unsigned int &len){
         }
         mem+=n;
     }
-    return mem-start; //return the number of consumed bytes
 }
 
-uint64_t getTLV(unsigned char*& memblock, uint64_t size, string parent){ //TODO: size should be uint_64t?
-    uint64_t consumed=0;
+void getTLV(unsigned char*& memblock, uint64_t size, string parent){ //TODO: size should be uint_64t?
     unsigned char* start = memblock;
-    unsigned int class_id, tag, len;
+    unsigned int class_id, tag;
+    uint64_t len;
     bool primitive;
-    while(consumed<size){
-        if(consumed != (memblock-start)){
-            cout << "Hola! Hola! consumed = "<< consumed <<
-                ", but start="<<hex<<start << "and memblock="<<memblock<<endl;
-            return -1;
-        }
-        consumed+= find_tag(memblock, class_id, primitive, tag);
-        consumed+= find_length(memblock, len);
+    while((memblock-start)<size){
+        find_tag(memblock, class_id, primitive, tag);
+        find_length(memblock, len);
 
         //concat parent and tag
         string tag_str;
@@ -88,16 +79,15 @@ uint64_t getTLV(unsigned char*& memblock, uint64_t size, string parent){ //TODO:
             cout << "Val='";
             for(unsigned int i=0; i<len; i++){
                 cout << hex <<setw(2)<<setfill('0') << (unsigned int)memblock[0]; 
-                memblock++;consumed++;
+                memblock++;
             }
             cout << "')\n" ;
         }
         else{
-            consumed+=getTLV(memblock,len, tag_str);
+            getTLV(memblock,len, tag_str);
             cout << ")" ;
         }
     }
-    return consumed;
 }
 
 int main(int argc, char* argv[]){
