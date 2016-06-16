@@ -103,17 +103,28 @@ int main(int argc, char* argv[]){
     ifstream in(ber_file_name.c_str(),ios::binary|ios::ate);
     const streampos size = in.tellg();
     in.close();
-    if(size==-1){
+    /*if(size==-1){ //this doesn't compile on hpux
         cerr << "FATAL ERROR: Failed to get the file size\n";
         return 1;
-    }
+    }*/
 
-    cout << "size =" << size << endl;
+    cout << "File size =" << size << " bytes" << endl;
     ifstream file(ber_file_name.c_str(), ios::in|ios::binary);
     if(file.is_open()){
         unsigned char* memblock = new unsigned char[size]();
         file.read((char*)memblock, size);
-        getTLV(memblock,size, "");
+        unsigned char* start = memblock;
+        unsigned int class_id, tag;
+        uint64_t len;
+        bool primitive;
+        int rec_count =0;
+        while((memblock-start)<size){
+            find_tag(memblock, class_id, primitive, tag);
+            cout << dec << endl << "ParentTAG="<<tag<< ". Record "<< ++rec_count << ":" << endl;
+            find_length(memblock, len);
+            cout << dec << "CDR size="<<len<< " bytes" << endl;
+            getTLV(memblock,len, "");
+        }
         file.close();
     }
     else {
