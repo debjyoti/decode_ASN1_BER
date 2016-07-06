@@ -56,7 +56,8 @@ void find_length(unsigned char*& mem, uint64_t &len){
     }
 }
 
-void getTLV(unsigned char*& memblock, uint64_t size, string parent){ //TODO: size should be uint_64t?
+//recursively dump the tag, length and value (in hex)
+void getTLV(unsigned char*& memblock, uint64_t size, string parent){
     unsigned char* start = memblock;
     unsigned int class_id, tag;
     uint64_t len;
