@@ -6,12 +6,18 @@ received is the same as the data transmitted by providing a common
 syntax for specifying application layer protocols. ASN.1 is an
 ISO/ITU-T standard based on the OSI model and is defined in “ASN.1
 encoding rules: Specification of Basic Notation, ITU-T
-Recommendation X.680”. BER (Basic Encoding Rule) is a type of
+Recommendation X.680”.
+
+BER (Basic Encoding Rule) is a type of
 ASN.1 where the data is encoded in the following parts:
+
 TAG: identifies the data type and consists of an ASN.1 tag
 and data structure information
+
 LENGTH: the length of the content part in number of octets
+
 VALUE: the value encoded according to data type specific rules.
+
 See tag_encoding.png and length_encoding.png files for details.
 
 <hr>
